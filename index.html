@@ -4,48 +4,138 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cashew Quality Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #ffecd2, #fcb69f);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .btn {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+    </style>
     <script>
         function calculateKOR() {
-            // Get input values
-            let goodKernels = parseFloat(document.getElementById("goodKernels").value);
-            let spottedKernels = parseFloat(document.getElementById("spottedKernels").value);
+            const grossWeight = parseFloat(document.getElementById('grossWeight').value) || 0;
+            const numberOfBags = parseFloat(document.getElementById('numberOfBags').value) || 0;
+            const goodKernels = parseFloat(document.getElementById('goodKernels').value) || 0;
+            const spottedKernels = parseFloat(document.getElementById('spottedKernels').value) || 0;
 
-            // Check if inputs are valid
-            if (isNaN(goodKernels) || isNaN(spottedKernels)) {
-                alert("Please enter valid numbers for Good Kernels and Spotted Kernels.");
-                return;
+            // Calculate Net Weight
+            const netWeight = grossWeight - numberOfBags;
+            document.getElementById('netWeight').value = netWeight;
+
+            // Calculate KOR
+            const KOR = ((goodKernels + spottedKernels / 2) * 80) / 453.6;
+            document.getElementById('resultKOR').value = KOR.toFixed(2);
+        }
+
+        function sendToWhatsApp() {
+            const fields = ['date', 'supplierName', 'containerNumber', 'origin', 'grossWeight', 'numberOfBags', 'netWeight', 'cutting', 'nutCount', 'moisture', 'goodKernels', 'spottedKernels', 'rejection', 'resultKOR', 'remark'];
+            let message = "";
+
+            fields.forEach(field => {
+                const value = document.getElementById(field).value;
+                if (value) {
+                    message += `${field.replace(/([A-Z])/g, ' $1')}: ${value}\n`;
+                }
+            });
+
+            if (message) {
+                const encodedMessage = encodeURIComponent(message);
+                window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+            } else {
+                alert('No fields to send.');
             }
-
-            // Calculate Kernel Output Ratio (KOR)
-            let kor = ((goodKernels + (spottedKernels / 2)) * 80) / 453.6;
-
-            // Display the result
-            document.getElementById("result").value = kor.toFixed(4); // Result in lbs
         }
     </script>
 </head>
 <body>
-    <h1>Cashew Quality Calculator</h1>
-    <form>
-        <label for="nutCount">Nut Count:</label><br>
-        <input type="number" id="nutCount" name="nutCount"><br><br>
+    <div class="container">
+        <h1>Cashew Quality Calculator</h1>
+        <label for="date">Date</label>
+        <input type="date" id="date">
 
-        <label for="moisture">Moisture (%):</label><br>
-        <input type="number" id="moisture" name="moisture" step="0.1"><br><br>
+        <label for="supplierName">Supplier Name</label>
+        <input type="text" id="supplierName">
 
-        <label for="goodKernels">Good Kernels (grams):</label><br>
-        <input type="number" id="goodKernels" name="goodKernels" step="0.1"><br><br>
+        <label for="containerNumber">Container/Truck Number</label>
+        <input type="text" id="containerNumber">
 
-        <label for="spottedKernels">Spotted Kernels (grams):</label><br>
-        <input type="number" id="spottedKernels" name="spottedKernels" step="0.1"><br><br>
+        <label for="origin">Origin</label>
+        <input type="text" id="origin">
 
-        <label for="rejection">Rejection (grams):</label><br>
-        <input type="number" id="rejection" name="rejection" step="0.1"><br><br>
+        <label for="grossWeight">Gross Weight (kg)</label>
+        <input type="number" id="grossWeight" step="0.01">
 
-        <label for="result">Kernel Output Ratio (KOR) in lbs:</label><br>
-        <input type="text" id="result" name="result" readonly><br><br>
+        <label for="numberOfBags">Number of Bags</label>
+        <input type="number" id="numberOfBags" step="1">
 
-        <input type="button" value="Calculate KOR" onclick="calculateKOR()">
-    </form>
+        <label for="netWeight">Net Weight (kg)</label>
+        <input type="number" id="netWeight" readonly>
+
+        <label for="cutting">Cutting</label>
+        <select id="cutting">
+            <option value="First">First</option>
+            <option value="Second">Second</option>
+            <option value="Third">Third</option>
+        </select>
+
+        <label for="nutCount">Nut Count</label>
+        <input type="number" id="nutCount">
+
+        <label for="moisture">Moisture (%)</label>
+        <input type="number" id="moisture" step="0.01">
+
+        <label for="goodKernels">Good Kernels (grams)</label>
+        <input type="number" id="goodKernels" step="0.01">
+
+        <label for="spottedKernels">Spotted Kernels (grams)</label>
+        <input type="number" id="spottedKernels" step="0.01">
+
+        <label for="rejection">Rejection (grams)</label>
+        <input type="number" id="rejection" step="0.01">
+
+        <label for="resultKOR">Result (KOR in lbs)</label>
+        <input type="number" id="resultKOR" readonly>
+
+        <label for="remark">Remark</label>
+        <textarea id="remark"></textarea>
+
+        <button class="btn" onclick="calculateKOR()">Calculate KOR</button>
+        <button class="btn" onclick="sendToWhatsApp()">Send to WhatsApp</button>
+    </div>
 </body>
 </html>
