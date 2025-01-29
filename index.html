@@ -50,35 +50,42 @@
         function calculateKOR() {
             const grossWeight = parseFloat(document.getElementById('grossWeight').value) || 0;
             const numberOfBags = parseFloat(document.getElementById('numberOfBags').value) || 0;
+            const perBagWeight = parseFloat(document.getElementById('perBagWeight').value) || 0;
             const goodKernels = parseFloat(document.getElementById('goodKernels').value) || 0;
             const spottedKernels = parseFloat(document.getElementById('spottedKernels').value) || 0;
+            const immatureKernels = parseFloat(document.getElementById('immatureKernels').value) || 0;
+            const rejection = parseFloat(document.getElementById('rejection').value) || 0;
+            const shellWeight = parseFloat(document.getElementById('shellWeight').value) || 0;
 
             // Calculate Net Weight
-            const netWeight = grossWeight - numberOfBags;
-            document.getElementById('netWeight').value = netWeight;
+            const netWeight = grossWeight - ((numberOfBags * perBagWeight) / 1000);
+            document.getElementById('netWeight').value = netWeight.toFixed(2);
+
+            // Calculate Total Weight
+            const totalWeight = goodKernels + spottedKernels + immatureKernels + rejection + shellWeight;
+            document.getElementById('totalWeight').value = totalWeight;
 
             // Calculate KOR
-            const KOR = ((goodKernels + spottedKernels / 2) * 80) / 453.6;
+            const KOR = ((goodKernels + (spottedKernels + immatureKernels) / 2) * 80) / 453.6;
             document.getElementById('resultKOR').value = KOR.toFixed(2);
         }
 
-        function sendToWhatsApp() {
-            const fields = ['date', 'supplierName', 'containerNumber', 'truckNumber', 'origin', 'grossWeight', 'numberOfBags', 'netWeight', 'cutting', 'nutCount', 'moisture', 'goodKernels', 'spottedKernels', 'rejection', 'resultKOR', 'remark'];
-            let message = "";
+        function sendWhatsApp() {
+            let message = "*Cashew Quality Report*\n";
+            const fields = ["date", "waybillNumber", "contractNumber", "supplierName", "containerNumber", "truckNumber", "origin", 
+                            "grossWeight", "numberOfBags", "bagType", "perBagWeight", "netWeight", "cutting", "nutCount", "moisture",
+                            "goodKernels", "spottedKernels", "immatureKernels", "rejection", "shellWeight", "totalWeight", "resultKOR", "remark"];
 
-            fields.forEach(field => {
-                const value = document.getElementById(field).value;
-                if (value) {
-                    message += `${field.replace(/([A-Z])/g, ' $1')}: ${value}\n`;
+            fields.forEach(id => {
+                let value = document.getElementById(id).value;
+                if (value.trim() !== "") {
+                    let label = document.querySelector(`label[for=${id}]`).innerText;
+                    message += `*${label}:* ${value}\n`;
                 }
             });
 
-            if (message) {
-                const encodedMessage = encodeURIComponent(message);
-                window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
-            } else {
-                alert('No fields to send.');
-            }
+            let whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, "_blank");
         }
     </script>
 </head>
@@ -87,11 +94,16 @@
         <h1>Cashew Quality Calculator</h1>
         <label for="date">Date</label>
         <input type="date" id="date">
+        
+        <label for="waybillNumber">Waybill Number</label>
+        <input type="text" id="waybillNumber">
+        
+        <label for="contractNumber">Contract Number</label>
+        <input type="text" id="contractNumber">
 
         <label for="supplierName">Supplier Name</label>
         <input type="text" id="supplierName">
 
-        <!-- Removed the old container number field and added two new fields -->
         <label for="containerNumber">Container Number</label>
         <input type="text" id="containerNumber">
 
@@ -106,6 +118,15 @@
 
         <label for="numberOfBags">Number of Bags</label>
         <input type="number" id="numberOfBags" step="1">
+
+        <label for="bagType">Bag Type</label>
+        <select id="bagType">
+            <option value="Jute">Jute</option>
+            <option value="Poly">Poly</option>
+        </select>
+
+        <label for="perBagWeight">Per Bag Weight (grams)</label>
+        <input type="number" id="perBagWeight" step="0.01">
 
         <label for="netWeight">Net Weight (kg)</label>
         <input type="number" id="netWeight" readonly>
@@ -129,8 +150,17 @@
         <label for="spottedKernels">Spotted Kernels (grams)</label>
         <input type="number" id="spottedKernels" step="0.01">
 
+        <label for="immatureKernels">Immature Kernels (grams)</label>
+        <input type="number" id="immatureKernels" step="0.01">
+
         <label for="rejection">Rejection (grams)</label>
         <input type="number" id="rejection" step="0.01">
+
+        <label for="shellWeight">Shell Weight (grams)</label>
+        <input type="number" id="shellWeight" step="0.01">
+
+        <label for="totalWeight">Total Weight (grams)</label>
+        <input type="number" id="totalWeight" step="0.01" readonly>
 
         <label for="resultKOR">Result (KOR in lbs)</label>
         <input type="number" id="resultKOR" readonly>
@@ -139,7 +169,7 @@
         <textarea id="remark"></textarea>
 
         <button class="btn" onclick="calculateKOR()">Calculate KOR</button>
-        <button class="btn" onclick="sendToWhatsApp()">Send to WhatsApp</button>
+        <button class="btn" style="background-color: #007bff; margin-left: 10px;" onclick="sendWhatsApp()">Send via WhatsApp</button>
     </div>
 </body>
 </html>
