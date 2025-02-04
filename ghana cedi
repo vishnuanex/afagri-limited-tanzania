@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghana Cedi Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            margin: auto;
+        }
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            width: 100%;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .result {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Ghana Cedi Calculator</h2>
+        <label>Price per KG (GHS):</label>
+        <input type="number" id="pricePerKg" oninput="calculateTonPrice()">
+        
+        <p>Price per Ton (1000 KG): <strong id="pricePerTon">0</strong> GHS</p>
+        
+        <label>Total Net Weight (KG):</label>
+        <input type="number" id="netWeight" oninput="calculateTotal()">
+        
+        <button onclick="calculateTotal()">Calculate</button>
+        
+        <div class="result">
+            <p>Total Cedi: <strong id="totalCedi">0</strong> GHS</p>
+            <p>Total in Words: <strong id="totalInWords"></strong></p>
+        </div>
+    </div>
+    
+    <script>
+        function calculateTonPrice() {
+            let pricePerKg = document.getElementById("pricePerKg").value;
+            document.getElementById("pricePerTon").innerText = (pricePerKg * 1000).toFixed(2);
+        }
+        
+        function calculateTotal() {
+            let pricePerKg = document.getElementById("pricePerKg").value;
+            let netWeight = document.getElementById("netWeight").value;
+            let totalCedi = pricePerKg * netWeight;
+            document.getElementById("totalCedi").innerText = totalCedi.toFixed(2);
+            document.getElementById("totalInWords").innerText = numberToWords(totalCedi);
+        }
+        
+        function numberToWords(num) {
+            const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+            const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+            
+            if (num == 0) return "Zero Cedi";
+            if (num < 20) return ones[num] + " Cedi";
+            if (num < 100) return tens[Math.floor(num / 10)] + " " + ones[num % 10] + " Cedi";
+            if (num < 1000) return ones[Math.floor(num / 100)] + " Hundred " + numberToWords(num % 100);
+            if (num < 1000000) return numberToWords(Math.floor(num / 1000)) + " Thousand " + numberToWords(num % 1000);
+            return "Amount too large to convert";
+        }
+    </script>
+</body>
+</html>
