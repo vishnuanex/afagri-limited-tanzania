@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim Calculator</title>
+  <style>
+    /* General Styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 1.5rem;
+      font-size: 2rem;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 600;
+      color: #34495e;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #2980b9;
+    }
+
+    .result {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: #ecf0f1;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .result h2 {
+      color: #2c3e50;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .result p {
+      margin: 0.5rem 0;
+      font-size: 1rem;
+      color: #34495e;
+    }
+
+    .result span {
+      font-weight: 600;
+      color: #3498db;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Claim Calculator</h1>
+    <label for="currency">Select Local Currency:</label>
+    <select id="currency">
+      <option value="INR">INR</option>
+      <option value="VND">VND</option>
+    </select>
+
+    <label for="exchangeRate">Enter Current Exchange Rate (1 USD = ?):</label>
+    <input type="number" id="exchangeRate" step="0.01" placeholder="Exchange Rate">
+
+    <label for="contractQuality">Contract Quality (lbs):</label>
+    <input type="number" id="contractQuality" step="0.01" placeholder="Contract Quality in lbs">
+
+    <label for="contractMetricTon">Contract Quantity (Metric Ton):</label>
+    <input type="number" id="contractMetricTon" step="0.01" placeholder="Contract Quantity in Metric Ton">
+
+    <label for="perTonPrice">Per Ton Price (USD):</label>
+    <input type="number" id="perTonPrice" step="0.01" placeholder="Per Ton Price in USD">
+
+    <label for="actualQuality">Actual Quality (lbs):</label>
+    <input type="number" id="actualQuality" step="0.01" placeholder="Actual Quality in lbs">
+
+    <label for="actualMetricTon">Actual Metric Ton:</label>
+    <input type="number" id="actualMetricTon" step="0.01" placeholder="Actual Metric Ton">
+
+    <label for="advancePercentage">Advance Amount (%):</label>
+    <input type="number" id="advancePercentage" step="0.01" placeholder="Advance Percentage">
+
+    <button onclick="calculateClaim()">Calculate</button>
+
+    <div class="result">
+      <h2>Results</h2>
+      <p><strong>Per Ton Price in USD:</strong> <span id="perTonPriceResult"></span></p>
+      <p><strong>Total Price in Contract (USD):</strong> <span id="totalContractPrice"></span></p>
+      <p><strong>Total Price in Landed Weight (USD):</strong> <span id="totalLandedPrice"></span></p>
+      <p><strong>Claim Amount per Ton (USD):</strong> <span id="claimPerTon"></span></p>
+      <p><strong>Claim Amount in Total Metric Ton (USD):</strong> <span id="claimMetricTon"></span></p>
+      <p><strong>Advance Amount (USD):</strong> <span id="advanceAmount"></span></p>
+      <p><strong>Payable Amount After Claim (USD):</strong> <span id="payableAmount"></span></p>
+      <p><strong>Payable Amount in Local Currency:</strong> <span id="payableLocal"></span></p>
+    </div>
+  </div>
+
+  <script>
+    function calculateClaim() {
+      // Input values
+      const currency = document.getElementById('currency').value;
+      const exchangeRate = parseFloat(document.getElementById('exchangeRate').value);
+      const contractQuality = parseFloat(document.getElementById('contractQuality').value);
+      const contractMetricTon = parseFloat(document.getElementById('contractMetricTon').value);
+      const perTonPrice = parseFloat(document.getElementById('perTonPrice').value);
+      const actualQuality = parseFloat(document.getElementById('actualQuality').value);
+      const actualMetricTon = parseFloat(document.getElementById('actualMetricTon').value);
+      const advancePercentage = parseFloat(document.getElementById('advancePercentage').value);
+
+      // Step 1: Calculate the Penalty Rate per lb
+      const penaltyRate = perTonPrice / contractQuality;
+
+      // Step 2: Calculate the Quality Difference (lbs)
+      const qualityDifference = contractQuality - actualQuality;
+
+      // Step 3: Apply Penalty Rules
+      let claimPerTon = 0;
+      if (qualityDifference > 2) {
+        // Double penalty for pounds beyond 2 lbs
+        claimPerTon = (2 * penaltyRate) + ((qualityDifference - 2) * penaltyRate * 2);
+      } else if (qualityDifference > 0) {
+        // Single penalty
+        claimPerTon = qualityDifference * penaltyRate;
+      }
+
+      // Step 4: Calculate the Total Claim Amount for Metric Ton
+      const claimMetricTon = claimPerTon * contractMetricTon;
+
+      // Step 5: Calculate Total Prices
+      const totalContractPrice = perTonPrice * contractMetricTon;
+      const totalLandedPrice = perTonPrice * actualMetricTon;
+
+      // Step 6: Calculate Advance Amount
+      const advanceAmount = (advancePercentage / 100) * totalContractPrice;
+
+      // Step 7: Calculate Payable Amount After Claim
+      const payableAmount = totalLandedPrice - claimMetricTon - advanceAmount;
+
+      // Step 8: Convert Payable Amount to Local Currency
+      const payableLocal = payableAmount * exchangeRate;
+
+      // Display results
+      document.getElementById('perTonPriceResult').textContent = perTonPrice.toFixed(2);
+      document.getElementById('totalContractPrice').textContent = totalContractPrice.toFixed(2);
+      document.getElementById('totalLandedPrice').textContent = totalLandedPrice.toFixed(2);
+      document.getElementById('claimPerTon').textContent = claimPerTon.toFixed(2);
+      document.getElementById('claimMetricTon').textContent = claimMetricTon.toFixed(2);
+      document.getElementById('advanceAmount').textContent = advanceAmount.toFixed(2);
+      document.getElementById('payableAmount').textContent = payableAmount.toFixed(2);
+      document.getElementById('payableLocal').textContent = `${payableLocal.toFixed(2)} ${currency}`;
+    }
+  </script>
+</body>
+</html>
