@@ -159,6 +159,16 @@
         }
 
         function sendWhatsApp() {
+            const bagType = document.getElementById('bagType').value;
+            const netWeight = document.getElementById('netWeight').value;
+
+            // Validation checks
+            if (bagType === "" || netWeight === "" || parseFloat(netWeight) === 0) {
+                alert("Please ensure that the bag type is selected and the net weight is calculated and valid.");
+                return; // Exit the function if validation fails
+            }
+
+            // Proceed with sending the WhatsApp message if validation passes
             let message = "*Cashew Quality Report*\n";
             const fields = ["date", "waybillNumber", "contractNumber", "supplierName", "containerNumber", "truckNumber", "origin", 
                             "grossWeight", "numberOfBags", "bagType", "perBagWeight", "netWeight", "cutting", "nutCount", "moisture",
@@ -266,6 +276,7 @@
 
         <label for="bagType">Bag Type</label>
         <select id="bagType">
+            <option value="">Select Bag Type</option>
             <option value="Jute">Jute</option>
             <option value="Poly">Poly</option>
         </select>
