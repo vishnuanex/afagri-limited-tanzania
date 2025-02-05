@@ -113,6 +113,7 @@
         function calculatePrice() {
             const pricePerKg = parseFloat(document.getElementById('pricePerKg').value) || 0;
             const manualNetWeight = parseFloat(document.getElementById('manualNetWeight').value) || 0;
+            const currency = document.getElementById('priceCurrency').value;
 
             // Calculate Price Per Ton
             const pricePerTon = pricePerKg * 1000;
@@ -123,7 +124,7 @@
             document.getElementById('totalPrice').value = totalPrice.toFixed(2);
 
             // Convert Total Price to Words
-            document.getElementById('totalPriceInWords').value = convertNumberToWords(totalPrice.toFixed(2));
+            document.getElementById('totalPriceInWords').value = convertNumberToWords(totalPrice.toFixed(2)) + " " + currency;
         }
 
         function convertNumberToWords(num) {
@@ -170,7 +171,7 @@
 
             // Proceed with sending the WhatsApp message if validation passes
             let message = "*Cashew Quality Report*\n";
-            const fields = ["date", "waybillNumber", "contractNumber", "supplierName", "containerNumber", "truckNumber", "origin", 
+            const fields = ["date", "companyName", "waybillNumber", "contractNumber", "supplierName", "containerNumber", "truckNumber", "origin", 
                             "grossWeight", "numberOfBags", "bagType", "perBagWeight", "netWeight", "cutting", "nutCount", "moisture",
                             "goodKernels", "spottedKernels", "immatureKernels", "rejection", "shellWeight", "totalWeight", "resultKOR", "remark"];
 
@@ -249,6 +250,9 @@
         <h2>Cashew Quality Calculator</h2>
         <label for="date">Date</label>
         <input type="date" id="date">
+
+        <label for="companyName">Company Name</label>
+        <input type="text" id="companyName">
         
         <label for="waybillNumber">Waybill Number</label>
         <input type="text" id="waybillNumber">
@@ -333,6 +337,7 @@
         <h2>Price Calculator</h2>
         <label for="priceCurrency">Currency</label>
         <select id="priceCurrency">
+            <option value="USD">US Dollar (USD)</option>
             <option value="INR">Indian Rupee (INR)</option>
             <option value="VND">Vietnamese Dong (VND)</option>
             <option value="GHS">Ghanaian Cedi (GHS)</option>
