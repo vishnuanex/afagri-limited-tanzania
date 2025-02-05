@@ -163,7 +163,7 @@
 
         function sendWhatsApp() {
             let message = "*Cashew Quality Report*\n";
-            const fields = ["date", "companyName", "waybillNumber", "contractNumber", "supplierName", "containerNumber", "truckNumber", "origin", 
+            const fields = ["date", "companyName", "waybillNumber", "contractNumber", "supplierName", "containerNumber", "sealNumber", "truckNumber", "origin", 
                             "grossWeight", "numberOfBags", "bagType", "perBagWeight", "netWeight", "cutting", "nutCount", "moisture",
                             "goodKernels", "spottedKernels", "immatureKernels", "rejection", "shellWeight", "remark"];
 
@@ -269,6 +269,9 @@
 
         <label for="containerNumber">Container Number</label>
         <input type="text" id="containerNumber">
+
+        <label for="sealNumber">Seal Number</label>
+        <input type="text" id="sealNumber">
 
         <label for="truckNumber">Truck Number</label>
         <input type="text" id="truckNumber">
