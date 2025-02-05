@@ -165,7 +165,7 @@
             let message = "*Cashew Quality Report*\n";
             const fields = ["date", "companyName", "waybillNumber", "contractNumber", "supplierName", "containerNumber", "truckNumber", "origin", 
                             "grossWeight", "numberOfBags", "bagType", "perBagWeight", "netWeight", "cutting", "nutCount", "moisture",
-                            "goodKernels", "spottedKernels", "immatureKernels", "rejection", "shellWeight", "totalWeight", "resultKOR", "remark"];
+                            "goodKernels", "spottedKernels", "immatureKernels", "rejection", "shellWeight", "remark"];
 
             fields.forEach(id => {
                 let value = document.getElementById(id).value;
@@ -174,6 +174,18 @@
                     message += `*${label}:* ${value}\n`;
                 }
             });
+
+            const totalWeight = parseFloat(document.getElementById('totalWeight').value) || 0;
+            const resultKOR = parseFloat(document.getElementById('resultKOR').value) || 0;
+
+            if (document.getElementById('cutting').value !== "") {
+                if (totalWeight > 0) {
+                    message += `*Total Weight:* ${totalWeight} grams\n`;
+                }
+                if (resultKOR > 0) {
+                    message += `*Result (KOR):* ${resultKOR} lbs\n`;
+                }
+            }
 
             let whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, "_blank");
@@ -285,6 +297,7 @@
 
         <label for="cutting">Cutting</label>
         <select id="cutting">
+            <option value="">Select Cutting</option>
             <option value="First">First</option>
             <option value="Second">Second</option>
             <option value="Third">Third</option>
@@ -377,7 +390,6 @@
 
         <label for="contractQuality">Contract Quality (lbs):</label>
         <input type="number" id="contractQuality" step="0.01" placeholder="Contract Quality in lbs">
-
         <label for="contractMetricTon">Contract Quantity (Metric Ton):</label>
         <input type="number" id="contractMetricTon" step="0.01" placeholder="Contract Quantity in Metric Ton">
 
