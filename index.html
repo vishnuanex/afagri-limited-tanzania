@@ -98,7 +98,7 @@
             const shellWeight = parseFloat(document.getElementById('shellWeight').value) || 0;
 
             // Calculate Net Weight
-            const netWeight = grossWeight - ((numberOfBags * perBagWeight) / 1000);
+            const netWeight = grossWeight - (numberOfBags * perBagWeight);
             document.getElementById('netWeight').value = netWeight.toFixed(2);
 
             // Calculate Total Weight
@@ -124,13 +124,15 @@
             document.getElementById('totalPrice').value = totalPrice.toFixed(2);
 
             // Convert Total Price to Words
-            document.getElementById('totalPriceInWords').value = convertNumberToWords(totalPrice.toFixed(2)) + " " + currency;
+            document.getElementById('totalPriceInWords').value = convertNumberToWords(totalPrice) + " " + currency + " Only";
         }
 
         function convertNumberToWords(num) {
             const units = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"];
             const teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
             const tens = ["", "Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+            num = Math.floor(num); // Ignore the decimal part
 
             if (num === 0) return "Zero";
 
@@ -160,16 +162,6 @@
         }
 
         function sendWhatsApp() {
-            const bagType = document.getElementById('bagType').value;
-            const netWeight = document.getElementById('netWeight').value;
-
-            // Validation checks
-            if (bagType === "" || netWeight === "" || parseFloat(netWeight) === 0) {
-                alert("Please ensure that the bag type is selected and the net weight is calculated and valid.");
-                return; // Exit the function if validation fails
-            }
-
-            // Proceed with sending the WhatsApp message if validation passes
             let message = "*Cashew Quality Report*\n";
             const fields = ["date", "companyName", "waybillNumber", "contractNumber", "supplierName", "containerNumber", "truckNumber", "origin", 
                             "grossWeight", "numberOfBags", "bagType", "perBagWeight", "netWeight", "cutting", "nutCount", "moisture",
@@ -285,7 +277,7 @@
             <option value="Poly">Poly</option>
         </select>
 
-        <label for="perBagWeight">Per Bag Weight (grams)</label>
+        <label for="perBagWeight">Per Bag Weight (kg)</label>
         <input type="number" id="perBagWeight" step="0.01">
 
         <label for="netWeight">Net Weight (kg)</label>
