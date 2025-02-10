@@ -162,14 +162,14 @@
         }
 
         function sendWhatsApp() {
-            let message = "*Cashew Quality Report*\n";
-            const fields = ["date", "companyName", "waybillNumber", "contractNumber", "supplierName", "containerNumber", "sealNumber", "truckNumber", "origin", 
+            let message = ""; // Removed the heading "Cashew Quality Report"
+            const fields = ["date", "companyName", "waybillNumber", "contractNumber", "billNumber", "supplierName", "containerNumber", "sealNumber", "truckNumber", "origin", 
                             "grossWeight", "numberOfBags", "bagType", "perBagWeight", "netWeight", "cutting", "nutCount", "moisture",
                             "goodKernels", "spottedKernels", "immatureKernels", "rejection", "shellWeight", "remark"];
 
             fields.forEach(id => {
                 let value = document.getElementById(id).value;
-                if (value.trim() !== "") {
+                if (value.trim() !== "" && (id !== "netWeight" || parseFloat(value) !== 0)) {
                     let label = document.querySelector(`label[for=${id}]`).innerText;
                     message += `*${label}:* ${value}\n`;
                 }
@@ -178,13 +178,12 @@
             const totalWeight = parseFloat(document.getElementById('totalWeight').value) || 0;
             const resultKOR = parseFloat(document.getElementById('resultKOR').value) || 0;
 
-            if (document.getElementById('cutting').value !== "") {
-                if (totalWeight > 0) {
-                    message += `*Total Weight:* ${totalWeight} grams\n`;
-                }
-                if (resultKOR > 0) {
-                    message += `*Result (KOR):* ${resultKOR} lbs\n`;
-                }
+            // Include Total Weight and KOR Result only if they are non-zero
+            if (totalWeight > 0) {
+                message += `*Total Weight:* ${totalWeight} grams\n`;
+            }
+            if (resultKOR > 0) {
+                message += `*Result (KOR):* ${resultKOR} lbs\n`;
             }
 
             let whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
@@ -263,6 +262,10 @@
         
         <label for="contractNumber">Contract Number</label>
         <input type="text" id="contractNumber">
+
+        <!-- Added Bill Number Field -->
+        <label for="billNumber">Bill Number</label>
+        <input type="text" id="billNumber">
 
         <label for="supplierName">Supplier Name</label>
         <input type="text" id="supplierName">
