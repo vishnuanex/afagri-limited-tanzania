@@ -94,6 +94,7 @@
             const goodKernels = parseFloat(document.getElementById('goodKernels').value) || 0;
             const spottedKernels = parseFloat(document.getElementById('spottedKernels').value) || 0;
             const immatureKernels = parseFloat(document.getElementById('immatureKernels').value) || 0;
+            const oil = parseFloat(document.getElementById('oil').value) || 0;
             const rejection = parseFloat(document.getElementById('rejection').value) || 0;
             const shellWeight = parseFloat(document.getElementById('shellWeight').value) || 0;
 
@@ -101,11 +102,11 @@
             const netWeight = grossWeight - (numberOfBags * perBagWeight);
             document.getElementById('netWeight').value = netWeight.toFixed(2);
 
-            // Calculate Total Weight
-            const totalWeight = goodKernels + spottedKernels + immatureKernels + rejection + shellWeight;
+            // Calculate Total Weight (including oil)
+            const totalWeight = goodKernels + spottedKernels + immatureKernels + oil + rejection + shellWeight;
             document.getElementById('totalWeight').value = totalWeight;
 
-            // Calculate KOR
+            // Calculate KOR (Oil is not included in KOR calculation)
             const KOR = ((goodKernels + (spottedKernels + immatureKernels) / 2) * 80) / 453.6;
             document.getElementById('resultKOR').value = KOR.toFixed(2);
         }
@@ -162,14 +163,15 @@
         }
 
         function sendWhatsApp() {
-            let message = ""; // Removed the heading "Cashew Quality Report"
+            let message = "";
             const fields = ["date", "companyName", "waybillNumber", "contractNumber", "billNumber", "supplierName", "containerNumber", "sealNumber", "truckNumber", "origin", 
                             "grossWeight", "numberOfBags", "bagType", "perBagWeight", "netWeight", "cutting", "nutCount", "moisture",
-                            "goodKernels", "spottedKernels", "immatureKernels", "rejection", "shellWeight", "remark"];
+                            "goodKernels", "spottedKernels", "immatureKernels", "oil", "rejection", "shellWeight", "remark"];
 
             fields.forEach(id => {
                 let value = document.getElementById(id).value;
-                if (value.trim() !== "" && (id !== "netWeight" || parseFloat(value) !== 0)) {
+                // Skip oil field if value is 0 or empty
+                if ((id !== "oil" || (parseFloat(value) || 0) > 0) && value.trim() !== "" && (id !== "netWeight" || parseFloat(value) !== 0)) {
                     let label = document.querySelector(`label[for=${id}]`).innerText;
                     message += `*${label}:* ${value}\n`;
                 }
@@ -218,7 +220,7 @@
             }
 
             // Step 4: Calculate the Total Claim Amount for Metric Ton
-            const claimMetricTon = claimPerTon * actualMetricTon; // Updated to depend on actual metric ton weight
+            const claimMetricTon = claimPerTon * actualMetricTon;
 
             // Step 5: Calculate Total Prices
             const totalContractPrice = perTonPrice * contractMetricTon;
@@ -263,7 +265,6 @@
         <label for="contractNumber">Contract Number</label>
         <input type="text" id="contractNumber">
 
-        <!-- Added Bill Number Field -->
         <label for="billNumber">Bill Number</label>
         <input type="text" id="billNumber">
 
@@ -323,6 +324,9 @@
 
         <label for="immatureKernels">Immature Kernels (grams)</label>
         <input type="number" id="immatureKernels" step="0.01">
+
+        <label for="oil">Oil (grams)</label>
+        <input type="number" id="oil" step="0.01">
 
         <label for="rejection">Rejection (grams)</label>
         <input type="number" id="rejection" step="0.01">
